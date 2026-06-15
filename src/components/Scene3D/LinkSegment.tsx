@@ -19,8 +19,6 @@ const JOINT_COLORS = [
   "#8b5cf6",
 ];
 
-const LINK_GEO_KEYS = ["0", "1", "2", "3", "4", "5"];
-
 export function LinkSegment({
   jointIndex,
   length,
@@ -31,29 +29,22 @@ export function LinkSegment({
 }: LinkSegmentProps) {
   const color = JOINT_COLORS[jointIndex % JOINT_COLORS.length];
 
-  const linkGeo = useMemo(() => {
-    return new THREE.CylinderGeometry(22, 24, length, 24, 1);
-  }, [length, LINK_GEO_KEYS[jointIndex]]);
-
-  const jointGeo = useMemo(() => new THREE.TorusGeometry(34, 6, 12, 36), [jointIndex]);
-  const axisIndicatorGeo = useMemo(() => new THREE.CylinderGeometry(4, 4, 90, 16), [jointIndex]);
-
-  const localOffset: [number, number, number] = useMemo(() => {
-    if (rotationAxis === "x") return [0, length / 2, 0];
-    if (rotationAxis === "z") return [0, length / 2, 0];
-    return [0, length / 2, 0];
-  }, [length, rotationAxis]);
-
+  const [linkRTop, linkRBot] = useMemo(() => [22, 24], []);
   const axisRotation: [number, number, number] = useMemo(() => {
     if (rotationAxis === "x") return [0, 0, Math.PI / 2];
     if (rotationAxis === "z") return [Math.PI / 2, 0, 0];
     return [0, 0, 0];
   }, [rotationAxis]);
+  const localOffset: [number, number, number] = useMemo(
+    () => [0, length / 2, 0],
+    [length]
+  );
 
   return (
     <group>
       <group position={localOffset}>
-        <mesh geometry={linkGeo} castShadow>
+        <mesh castShadow>
+          <cylinderGeometry args={[linkRTop, linkRBot, length, 24, 1]} />
           <meshStandardMaterial
             color="#5a6a80"
             metalness={0.55}
@@ -72,7 +63,7 @@ export function LinkSegment({
 
       <group position={[nextAxisOffset[0], nextAxisOffset[1] + length, nextAxisOffset[2]]}>
         <mesh rotation={axisRotation}>
-          <primitive object={jointGeo} attach="geometry" />
+          <torusGeometry args={[34, 6, 12, 36]} />
           <meshStandardMaterial
             color={color}
             metalness={0.6}
@@ -82,24 +73,40 @@ export function LinkSegment({
           />
         </mesh>
         <mesh rotation={axisRotation}>
-          <primitive object={axisIndicatorGeo} attach="geometry" />
+          <cylinderGeometry args={[4, 4, 90, 16]} />
           <meshBasicMaterial color={color} transparent opacity={0.9} />
         </mesh>
-        <mesh rotation={axisRotation}>
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[28, 30, 48]} />
           <meshBasicMaterial color={color} transparent opacity={0.65} side={THREE.DoubleSide} />
         </mesh>
 
         {showAxes && (
           <group>
-            <lineSegments>
-              <edgesGeometry
-                attach="geometry"
-                args={[new THREE.AxesHelper(60).geometry as THREE.BufferGeometry]}
-              />
-              <lineBasicMaterial attach="material" color={undefined} vertexColors />
-            </lineSegments>
-            <primitive object={new THREE.AxesHelper(60)} />
+            <mesh position={[40, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[2.2, 2.2, 80, 10]} />
+              <meshBasicMaterial color="#ef4444" />
+            </mesh>
+            <mesh position={[82, 0, 0]}>
+              <coneGeometry args={[5, 10, 10]} />
+              <meshBasicMaterial color="#ef4444" />
+            </mesh>
+            <mesh position={[0, 40, 0]}>
+              <cylinderGeometry args={[2.2, 2.2, 80, 10]} />
+              <meshBasicMaterial color="#22c55e" />
+            </mesh>
+            <mesh position={[0, 82, 0]} rotation={[Math.PI, 0, 0]}>
+              <coneGeometry args={[5, 10, 10]} />
+              <meshBasicMaterial color="#22c55e" />
+            </mesh>
+            <mesh position={[0, 0, 40]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[2.2, 2.2, 80, 10]} />
+              <meshBasicMaterial color="#3b82f6" />
+            </mesh>
+            <mesh position={[0, 0, 82]} rotation={[-Math.PI / 2, 0, 0]}>
+              <coneGeometry args={[5, 10, 10]} />
+              <meshBasicMaterial color="#3b82f6" />
+            </mesh>
           </group>
         )}
 

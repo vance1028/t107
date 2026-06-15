@@ -1,12 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
+import * as THREE from "three";
 
 export function Ground() {
   return (
     <group>
-      <gridHelper
-        args={[2400, 48, 0x2dd4bf, 0x163a5b]}
-        position={[0, 0, 0]}
-      />
+      <gridHelper args={[2400, 48, "#2dd4bf", "#163a5b"]} position={[0, 0, 0]} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
         <circleGeometry args={[2000, 64]} />
         <meshStandardMaterial
@@ -26,12 +24,12 @@ export function Ground() {
         <meshBasicMaterial color="#0d9488" transparent opacity={0.3} />
       </mesh>
       <group position={[0, 0, 0]}>
-        <mesh position={[600, 1, 0]}>
-          <cylinderGeometry args={[1, 1, 3, 6]} />
+        <mesh position={[600, 1.5, 0]}>
+          <cylinderGeometry args={[1.5, 1.5, 4, 6]} />
           <meshBasicMaterial color="#ef4444" />
         </mesh>
-        <mesh position={[0, 1, 600]}>
-          <cylinderGeometry args={[1, 1, 3, 6]} />
+        <mesh position={[0, 1.5, 600]}>
+          <cylinderGeometry args={[1.5, 1.5, 4, 6]} />
           <meshBasicMaterial color="#3b82f6" />
         </mesh>
       </group>

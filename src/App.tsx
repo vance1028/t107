@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Scene3D } from "./components/Scene3D";
 import { ControlPanel } from "./components/ControlPanel";
 import { StatusBar } from "./components/StatusBar";
@@ -6,8 +6,12 @@ import { FKResult } from "./kinematics/forwardKinematics";
 
 export default function App() {
   const [fkResult, setFkResult] = useState<FKResult | null>(null);
+  const lastFkPush = useRef(0);
 
   const handleFkUpdate = useCallback((fk: FKResult) => {
+    const now = performance.now();
+    if (now - lastFkPush.current < 110) return;
+    lastFkPush.current = now;
     setFkResult(fk);
   }, []);
 
